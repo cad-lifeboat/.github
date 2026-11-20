@@ -42,12 +42,18 @@ def boat(cx, cy, k, uid):
             f'stroke-linecap="round" opacity="{opacity}"/>')
     back = wave(30, '#2a8fa0', 0.9, 7)
     front = wave(48, TEAL, 1, 9) + wave(84, TEAL, 0.45, 7)
-    return (f'<defs>{defs}</defs>' + back + f'<g clip-path="url(#above-{uid})">' + hull + rope + '</g>' + front)
+    # The inside of the boat: far rim and a darker interior, drawn behind the cargo.
+    inside = (f'<path d="M{P(-170, -40)} Q{P(-140, -50)} {P(-100, -50)} L{P(100, -50)} Q{P(140, -50)} {P(174, -46)} '
+              f'L{P(182, -44)} Q{P(150, -28)} {P(100, -28)} L{P(-100, -28)} Q{P(-150, -28)} {P(-178, -40)} Z" '
+              f'fill="#9c4a0e"/>')
+    return (f'<defs>{defs}</defs>' + back + inside,
+            f'<g clip-path="url(#above-{uid})">' + hull + rope + '</g>' + front)
 
 
 def mark(cx, cy, k, uid='m'):
-    """The logo: your CAD part riding in a lifeboat."""
-    return cube(cx, cy - 162 * k, 74 * k) + boat(cx, cy, k, uid)
+    """The logo: your CAD part riding in a lifeboat (inside, cargo, then the near side of the hull)."""
+    behind, front = boat(cx, cy, k, uid)
+    return behind + cube(cx, cy - 146 * k, 84 * k) + front
 
 
 def avatar(size=512):
